@@ -1,0 +1,37 @@
+{% extends 'wiki.html' %}
+
+{% block title %} Início {% endblock %}
+
+{% block customBlock %}
+    {% if get_flashed_messages() %}
+            {% for category, message in get_flashed_messages(with_categories=True) %}
+                <div class="mt-2 md:mt-0 lg:md:inline-block">
+                    <div class="p-2 flex items-center bg-{% if category=='error' %}redwarning{% else %}greensuccess{% endif %} inline-block font-opensans font-bold rounded-md text-swhite">
+                        <span class="inline-block fill-swhite">{{ renderWarning() }}</span> <span class=" lg:inline-block ml-3"> {{ message }} </span>
+                    </div>
+                </div>
+            {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{% block breadCrumbs %} <span class="ml-1"> Início </span> {% endblock %}
+
+{% block pageHead %}Página Principal{% endblock %}
+
+{% block middleContent %}
+
+<p>
+    Bem-vindo à Wiki do RoseOnline Brasil. <br><br> 
+    Este projeto colaborativo visa auxiliar novos jogadores a progredir no jogo e chegar nas etapas avançadas do conteúdo.<br><br>
+    Você pode navegar pelas categorias disponíveis:
+
+    <ul class="ml-3">
+        <li class="underline"><a class="text-blue" href="guides/iniciando"><span class="flex items-center fill-blue">{{ renderArrow() }} Iniciando</span></a></li>
+        <li class="underline"><a class="text-blue" href="guides/leveling"><span class="flex items-center fill-blue">{{ renderArrow() }} Ganhando niveis</span></a></li>
+        <li class="underline"><a class="text-blue" href="/quest"><span class="flex items-center fill-blue">{{ renderArrow() }} Quests</span></a></li>
+        <li class="underline"><a class="text-blue" href="/npcs"><span class="flex items-center fill-blue">{{ renderArrow() }} NPCs</span></a></li>
+        <li class="underline"><a class="text-blue" href="/itens"><span class="flex items-center fill-blue">{{ renderArrow() }} Itens</span></a></li>
+    </ul>
+</p>
+
+{% endblock%}

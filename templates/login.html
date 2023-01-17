@@ -1,0 +1,42 @@
+{% extends 'wiki.html' %}
+
+{% block title %} Login {% endblock %}
+{% block breadCrumbs %} <span class="ml-1 mr-1"> Início </span> {{ renderArrow() }} <span class="ml-1">Login</span> {% endblock %}
+
+{% block pageHead %}Login{% endblock %}
+
+{% block middleContent %}
+<p class="text-center">
+    Faça login para interagir com o conteúdo da WIKI.<br><br>
+    <span class="text-blue text-bold font-inputs">Não tem uma conta? <a class="font-extrabold" href="/registrar">Crie Aqui</a></span>
+    <div class="p-3 text-center">
+
+        {% if get_flashed_messages() %}
+        <div class="inline-block">
+            <div class="p-2 flex items-center bg-redwarning inline-block mb-3 font-opensans font-bold rounded-md text-swhite">
+                <span class="inline-block fill-swhite">{{ renderWarning() }}</span> <span class=" inline-block ml-3"> {{ get_flashed_messages() | join(" ") }}</span>
+            </div>
+        </div>
+        {% endif %}
+        
+        <form action="/login" method="POST">
+            <div>
+                <input class="rounded-full block mx-auto px-2 py-1 focus:outline-1 focus:outline-blue" autocomplete="username" name="username" placeholder="Usuário" type="text">
+                <div id="tooltipuser" class="cst-tooltip bg-redwarning rounded-full text-swhite" role="tooltip">
+                    Digite um nome de usuário.
+                    <div id="arrowuser" class="cst-arrow" data-popper-arrow></div>
+                </div>
+            </div>
+            <div>
+                <input class="rounded-full block mx-auto mt-2 px-2 py-1 focus:outline-1 focus:outline-blue" autocomplete="password" name="password" placeholder="Senha" type="password">  
+                <div id="tooltippass" class="cst-tooltip bg-redwarning rounded-full text-swhite" role="tooltip">
+                    Digite uma senha.
+                    <div id="arrowpass" class="cst-arrow" data-popper-arrow></div>
+                </div>
+            </div>
+            <button id="login-button" type="submit" class="font-inputs text-swhite rounded-full mx-auto mt-2 px-3 py-2 bg-blue hover:rounded hover:bg-swhite hover:text-blue duration-100">Login</button>
+        </form>
+    </div>
+</p>
+<script src="{{ url_for('static', filename='login.js') }}"></script>
+{% endblock%}

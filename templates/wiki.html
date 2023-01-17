@@ -1,0 +1,213 @@
+{% macro renderArrow() %}
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12"><path d="M4.7 10c-.2 0-.4-.1-.5-.2-.3-.3-.3-.8 0-1.1L6.9 6 4.2 3.3c-.3-.3-.3-.8 0-1.1.3-.3.8-.3 1.1 0l3.3 3.2c.3.3.3.8 0 1.1L5.3 9.7c-.2.2-.4.3-.6.3Z"></path></svg>
+{% endmacro %}
+
+{% macro renderHome() %}
+<svg class="mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z"></path></svg>
+{% endmacro %}
+
+{% macro renderWarning() %}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575ZM8 5a.75.75 0 0 0-.75.75v2.5a.75.75 0 0 0 1.5 0v-2.5A.75.75 0 0 0 8 5Zm1 6a1 1 0 1 0-2 0 1 1 0 0 0 2 0Z"></path></svg>
+{% endmacro %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> RoseOnBr Wiki - {% block title %} {% endblock %}</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+        
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Poppins:wght@200&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+        
+        {% if project_status == 'development' %}
+            <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script>
+        {% else %}
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+        {% endif %}
+
+        {% block editorJS %}
+        
+        {% endblock %}
+
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    colors: {
+                        'blue':'#275bb0',
+                        'swhite':'#e3e3e3',
+                        'orange':"#ffac47",
+                        'backmenu':'#bfbfbf',
+                        'menuBorder':'#d9d9d9',
+                        'agradeblewhite':'#ebebeb',
+                        'button':"#275bb0",
+                        'buttonhover':"#204d96",
+                        'redwarning':"#a83236",
+                        'greensuccess':"#189103",
+                        'icewhite':"#f0f0f0"
+                    },
+                    extend:{
+                        fontFamily: {
+                            'inputs':['Lexend Deca','sans-serif'],
+                            'poppins':['Poppins','sans-serif'],
+                            'opensans':['Open Sans','sans-serif']
+                        },
+                        borderRadius:{
+                            'menuBorder':'10px'
+                        },
+                        fontSize:{
+                            'uxs':'0.4rem'
+                        }
+                    }  
+            
+                }  
+            }
+        </script>
+        <link href="/static/style.css" rel="stylesheet">
+    </head>
+    <body class="bg-agradeblewhite min-h-screen">
+        <nav class="text-center lg:flex items-center p-2 bg-swhite">
+            <img class='mx-auto md:mx-0 md:mr-2' src="https://via.placeholder.com/100x60?text=logo">
+            {% block customBlock %}
+            {% endblock %}
+            <div class="mt-2 flex items-center md:mt-0 md:block md:ml-auto"> <!-- mx-auto md:mx-0 my-2 lg:my-0 md:lg:ml-auto md:lg:mr-3 -->
+                <form class="font-inputs flex mx-auto md:mx-0 lg:ml-auto items-center">
+                    <input type="text" class="sm:w-50 rounded-full py-1 px-3" placeholder="buscar">
+                    <button type="submit" class="bg-button p-2 ml-2 rounded-full flex items-center justify-center fill-swhite hover:bg-buttonhover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M10.25 2a8.25 8.25 0 0 1 6.34 13.53l5.69 5.69a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215l-5.69-5.69A8.25 8.25 0 1 1 10.25 2ZM3.5 10.25a6.75 6.75 0 1 0 13.5 0 6.75 6.75 0 0 0-13.5 0Z"></path></svg></button>
+                </form>
+            </div>
+        </nav>
+        <div class="px-2 mt-1 mx-auto">
+            <section class="grid grid-cols-12 gap-1">
+                <div class="p-2 col-span-12 lg:col-span-2 bg-swhite">
+                    <section class="bg-backmenu bg-opacity-20 backdrop-blur-lg p-2 rounded drop-shadow-lg">
+                        {% if session['user_id'] %}
+                        <p class="font-inputs">Informações da Conta</p>
+                        <hr>
+                        <p class="mt-1 text-xs">Usuário: <span class="font-opensans font-black">{{ session['user_info']['username'] }}</span></p>
+                        <p class="mt-1 text-xs">Membro Desde: <span class="font-opensans font-black">{{ session['user_info']['created_at'] }}</span></p>
+                        <span class="flex items-center mt-2">{{ renderArrow() }} <a href="/logout" class="ml-1 font-inputs font-bold">Logout</a></span>
+                        {% else %}
+                            <p class="font-inputs">Menu</p>
+                            <hr>
+                            <ul class="align-middle">
+                                <li class="align-middle">
+                                    <a href="/login" class="inline-block">
+                                        <div class="flex items-center align-middle">
+                                            {{ renderArrow() }} Login
+                                        </div>
+                                    </a>
+                                    
+                                </li>
+                                <li>
+                                    <a href="/registrar" class="inline-block">
+                                        <div class="flex items-center align-middle">
+                                        {{ renderArrow() }} Registrar
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        {% endif %}
+                    </section>
+
+                    <section class="mt-2 bg-backmenu bg-opacity-20 backdrop-blur-lg p-2 rounded drop-shadow-lg">
+                        <p class="font-inputs">Navegar</p>
+                        <hr>
+                        <ul class="align-middle">
+                            <li class="align-middle">
+                                <a href="/guias" class="inline-block">
+                                    <div class="flex items-center align-middle">
+                                        {{ renderArrow() }} Guias
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="align-middle">
+                                <a href="/quests" class="inline-block">
+                                    <div class="flex items-center align-middle">
+                                        {{ renderArrow() }} Quests
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/npcs" class="inline-block">
+                                    <div class="flex items-center align-middle">
+                                    {{ renderArrow() }} NPCs
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/itens" class="inline-block">
+                                    <div class="flex items-center align-middle">
+                                    {{ renderArrow() }} Itens
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </section>
+                    {% if session['user_info'] and session['user_info']['allowance'] > 2 %}
+                    <section class="mt-2 bg-backmenu bg-opacity-20 backdrop-blur-lg p-2 rounded drop-shadow-lg">
+                        <p class="font-inputs">Ações</p>
+                        <hr>
+                        <ul class="align-middle">
+                            <li class="align-middle">
+                                <a href="/nova_pagina" class="inline-block">
+                                    <div class="flex items-center align-middle">
+                                        {{ renderArrow() }} Nova Página
+                                    </div>
+                                </a>
+                                
+                            </li>
+                            <li>
+                                <a href="/editar_pagina" class="inline-block">
+                                    <div class="flex items-center align-middle">
+                                    {{ renderArrow() }} Editar Página
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/remover_pagina" class="inline-block">
+                                    <div class="flex items-center align-middle">
+                                    {{ renderArrow() }} Remover Página
+                                    </div>
+                                </a>
+                            </li>
+
+                            {% if session['user_info']['allowance'] > 5 %}
+                            <li>
+                                <a href="/painel" class="inline-block">
+                                    <div class="flex items-center align-middle">
+                                    {{ renderArrow() }} Painel
+                                    </div>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </section>
+                    {% endif %}
+                </div>
+                <div class="p-2 col-span-12 lg:col-span-7 bg-backmenu bg-opacity-20 backdrop-blur-lg p-2 rounded drop-shadow-lg">
+                    <div class="bg-blue fill-swhite text-swhite rounded-full px-2 py-1 flex items-center align-middle">
+                       {{ renderHome() }} {{ renderArrow() }} {% block breadCrumbs %}{% endblock %}
+                    </div>
+                    <h2 class="p-3 font-opensans font-bold text-2xl">{% block pageHead %}{% endblock %}</h2>
+                    <hr>
+                    <div class="p-2 font-opensans">
+                        {% block middleContent %}{% endblock %}
+                    </div>  
+                </div>
+                <div class="p-2 col-span-12 lg:col-span-3 bg-backmenu bg-opacity-20 backdrop-blur-lg p-2 rounded drop-shadow-lg">
+                    {% block rightContent %}{% endblock %}
+                </div>
+            </section>
+        </div>
+        <footer class="bg-orange mt-2 text-center font-opensans inset-x-0 bottom-0">
+            RoseOnBr - 2023
+        </footer>
+    </body>
+</html>
+

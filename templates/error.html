@@ -1,0 +1,13 @@
+{% extends 'wiki.html' %}
+
+{% block title %} Algo deu errado {% endblock %}
+{% block breadCrumbs %} <span class="ml-1 mr-1"> Início </span> {{ renderArrow() }} <span class="ml-1">Erro</span> {% endblock %}
+
+{% block pageHead %}Algo deu errado{% endblock %}
+
+{% block middleContent %}
+<div class="text-center">
+    <h1 class="font-inputs text-4xl">Alguma coisa não funcionou como esperávamos :(</h1>
+    <p>A pagina solicitada pode não estar disponível</p>
+</div>
+{% endblock%}

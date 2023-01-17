@@ -1,0 +1,13 @@
+{% extends 'wiki.html' %}
+
+{% block title %} Não Encontrado {% endblock %}
+{% block breadCrumbs %} <span class="ml-1 mr-1"> Início </span> {{ renderArrow() }} <span class="ml-1">Não Encontrado</span> {% endblock %}
+
+{% block pageHead %}404 - Não Encontrado{% endblock %}
+
+{% block middleContent %}
+<div class="text-center">
+    <h1 class="font-inputs text-4xl">404 - Não encontrado.</h1>
+    <p>A pagina solicitada pode não estar disponível</p>
+</div>
+{% endblock%}

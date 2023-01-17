@@ -1,0 +1,13 @@
+{% extends 'wiki.html' %}
+
+{% block title %} Não Autorizado {% endblock %}
+{% block breadCrumbs %} <span class="ml-1 mr-1"> Início </span> {{ renderArrow() }} <span class="ml-1">Não Autorizado</span> {% endblock %}
+
+{% block pageHead %}403 - Não Autorizado{% endblock %}
+
+{% block middleContent %}
+<div class="text-center">
+    <h1 class="font-inputs text-4xl">403 - Não Autorizado.</h1>
+    <p>Você não tem autorização para acessar esta pagina.</p>
+</div>
+{% endblock%}

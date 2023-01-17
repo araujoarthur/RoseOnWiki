@@ -1,0 +1,46 @@
+/* Tooltip guide: https://popper.js.org/docs/v2/tutorial/ */
+.cst-tooltip {
+    padding:0.09em 1em 0.09em 1em;
+
+    display: inline-flex;
+    font-size:0.8em;
+    display: none;
+    z-index:999;
+}
+
+.cst-arrow, .cst-arrow::before {
+    position:absolute;
+    width:8px;
+    height:8px;
+    background-color: inherit;
+}
+
+.cst-arrow {
+    visibility: hidden;
+}
+
+.cst-arrow::before {
+    visibility: visible;
+    content: '';
+    transform: rotate(45deg);
+}
+
+.cst-tooltip[data-popper-placement^='top'] > .cst-arrow {
+    bottom: -4px;
+}
+  
+.cst-tooltip[data-popper-placement^='bottom'] > .cst-arrow {
+    top: -4px;
+}
+  
+.cst-tooltip[data-popper-placement^='left'] > .cst-arrow {
+    right: -5px;
+}
+  
+.cst-tooltip[data-popper-placement^='right'] > .cst-arrow {
+    left: -6px;
+}
+
+.cst-tooltip[data-show] {
+    display:block;
+}

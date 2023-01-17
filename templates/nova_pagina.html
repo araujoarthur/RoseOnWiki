@@ -1,0 +1,153 @@
+{% extends 'wiki.html' %}
+
+{% block editorJS %}
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/link@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/raw"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/simple-image@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@weekwood/editorjs-hyperlink@1.0.9/dist/bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/warning@latest"></script>
+
+
+{% endblock %}
+
+
+{% block title %} Nova Pagina {% endblock %}
+{% block breadCrumbs %} <span class="ml-1 mr-1"> Início </span> {{ renderArrow() }} <span class="ml-1">Nova Página</span> {% endblock %}
+
+{% block pageHead %}Criar Nova Página{% endblock %}
+
+{% block middleContent %}
+<section class="text-center">
+{% for typ in page_types %}
+
+    <div class="font-inputs mt-2 p-2 inline-block rounded-md bg-icewhite bg-opacity-90 backdrop-blur-lg p-2 rounded drop-shadow-lg hover:bg-blue">
+        <span id="{{typ['name']}}Button" class="capitalize inline-block cursor-pointer"> {{ typ['name'] }}</a>
+    </div>
+{% endfor %}
+</section>
+
+<section id="questSection" class="mt-3 rounded-md bg-icewhite bg-opacity-30 hidden backdrop-blur-lg p-2 rounded drop-shadow-lg">
+    <div class="text-center">
+        <h3 class="text-lg font-inputs "> Criando Página de Quest </h3>
+    </div>    
+    <div>
+        <form>
+            <input type="hidden" name="page_type" value="{{allowed_pages_relation['quest']}}">
+            <div class="p-4 inline-block">
+                <input type="text"  class="rounded-full px-2 py-1" placeholder="Titulo da Quest" name="quest_title">
+            </div>
+
+            <div class="p-4 inline-block">
+                <select name="quest_planet" class="rounded-full px-2 py-1">
+                    <option selected disabled>Selecione o Planeta da Quest</option>
+                    {% for planet in planets %}
+                        <option value="{{planet['id']}}">{{planet['name']}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- TEXT AREA -->
+            <div class="p-4">
+                <div class="p-6 bg-icewhite rounded">
+                    <div id="textAreaQuest" class="bg-icewhite rounded p-3 ">
+                    </div>  
+                </div>
+            </div>
+                
+            <div class="text-center">
+                <span role="button" id="createQuestPage" class=" px-2 py-3 rounded-full font-inputs text-icewhite hover:bg-swhite hover:text-button bg-button inline-block">Criar Página</span>
+            </div>
+            
+        </form>
+    </div>
+</section>
+
+<section id="npcSection" class="mt-3 rounded-md bg-icewhite bg-opacity-30 hidden backdrop-blur-lg p-2 rounded drop-shadow-lg">
+    <div class="text-center">
+        <h3 class="text-lg font-inputs "> Criando Página de NPC </h3>
+    </div>    
+    <div>
+        <form>
+            <input type="hidden" name="page_type" value="{{allowed_pages_relation['npc']}}">
+
+            <div class="p-4 inline-block">
+                <input type="text" class="rounded-full px-2 py-1" placeholder="Nome do NPC" name="npc_name">
+            </div>
+
+            <!-- TEXT AREA -->
+            <div class="p-4">
+                <div class="p-6 bg-icewhite rounded">
+                    <div id="textAreaNPC" class="bg-icewhite rounded p-3 ">
+                    </div>  
+                </div>
+            </div>
+
+            <div class="text-center">
+                <span role="button" id="createNPCPage" class=" px-2 py-3 rounded-full font-inputs text-icewhite hover:bg-swhite hover:text-button bg-button inline-block">Criar Página</span>
+            </div>
+        </form>
+    </div>
+</section>
+
+<section id="guiaSection" class="mt-3 rounded-md bg-icewhite bg-opacity-30 hidden backdrop-blur-lg p-2 rounded drop-shadow-lg">
+    <div class="text-center">
+        <h3 class="text-lg font-inputs "> Criando Guia</h3>
+    </div>    
+    <div>
+        <form>
+            <input type="hidden" name="page_type" value="{{allowed_pages_relation['npc']}}">
+
+            <div class="p-4 inline-block">
+                <input type="text" class="rounded-full px-2 py-1" placeholder="Nome do Guia" name="guide_title">
+            </div>
+
+            <!-- TEXT AREA -->
+            <div class="p-4">
+                <div class="p-6 bg-icewhite rounded">
+                    <div id="textAreaGuia" class="bg-icewhite rounded p-3 ">
+                    </div>  
+                </div>
+            </div>
+
+            <div class="text-center">
+                <span role="button" id="createGuidePage" class=" px-2 py-3 rounded-full font-inputs text-icewhite hover:bg-swhite hover:text-button bg-button inline-block">Criar Página</span>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+<section id="itemSection" class="mt-3 rounded-md bg-icewhite bg-opacity-30 backdrop-blur-lg p-2 hidden rounded drop-shadow-lg">
+    <div class="text-center">
+        <h3 class="text-lg font-inputs "> Criando Página de Item</h3>
+    </div>    
+    <div>
+        <form>
+            <input type="hidden" name="page_type" value="{{allowed_pages_relation['npc']}}">
+
+            <div class="p-4 inline-block">
+                <input type="text" class="rounded-full px-2 py-1" placeholder="Nome do Item" name="item_title">
+            </div>
+
+            <!-- TEXT AREA -->
+            <div class="p-4">
+                <div class="p-6 bg-icewhite rounded">
+                    <div id="textAreaItem" class="bg-icewhite rounded p-3 ">
+                    </div>  
+                </div>
+            </div>
+
+            <div class="text-center">
+                <span role="button" id="createItemPage" class=" px-2 py-3 rounded-full font-inputs text-icewhite hover:bg-swhite hover:text-button bg-button inline-block">Criar Página</span>
+            </div>
+
+        </form>
+    </div>
+</section>
+<script src="{{url_for('static', filename='newPage.js')}}"></script>
+{% endblock%}

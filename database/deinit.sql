@@ -1,0 +1,16 @@
+DROP TABLE pages;
+DROP TABLE quests;
+DROP TABLE planets;
+DROP TABLE gem_data;
+DROP TABLE consumable_data;
+DROP TABLE jewel_data;
+DROP TABLE armor_data;
+DROP TABLE backshield_data;
+DROP TABLE mask_data;
+DROP TABLE shield_data;
+DROP TABLE weapons_data;
+DROP TABLE status_types;
+DROP TABLE item_subtype;
+DROP TABLE item_types;
+DROP TABLE page_types;
+DROP TABLE accounts;
