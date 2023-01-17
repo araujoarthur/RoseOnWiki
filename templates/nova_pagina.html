@@ -79,6 +79,15 @@
                 <input type="text" class="rounded-full px-2 py-1" placeholder="Nome do NPC" name="npc_name">
             </div>
 
+            <div class="p-4 inline-block">
+                <select name="npc_planet" class="rounded-full px-2 py-1">
+                    <option selected disabled>Selecione o Planeta do NPC</option>
+                    {% for planet in planets %}
+                        <option value="{{planet['id']}}">{{planet['name']}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
             <!-- TEXT AREA -->
             <div class="p-4">
                 <div class="p-6 bg-icewhite rounded">
@@ -96,7 +105,7 @@
 
 <section id="guiaSection" class="mt-3 rounded-md bg-icewhite bg-opacity-30 hidden backdrop-blur-lg p-2 rounded drop-shadow-lg">
     <div class="text-center">
-        <h3 class="text-lg font-inputs "> Criando Guia</h3>
+        <h3 class="text-lg font-inputs ">Criando Guia</h3>
     </div>    
     <div>
         <form>
@@ -129,9 +138,26 @@
     <div>
         <form>
             <input type="hidden" name="page_type" value="{{allowed_pages_relation['npc']}}">
+            <div id="input_group_general_items">
+                <div class="p-4 inline-block">
+                    <input type="text" class="rounded-full px-2 py-1" placeholder="Nome do Item" name="item_title">
+                </div>
 
-            <div class="p-4 inline-block">
-                <input type="text" class="rounded-full px-2 py-1" placeholder="Nome do Item" name="item_title">
+                <div class="p-4 inline-block">
+                    <select id="item_types" name="item_type" class="capitalize rounded-full px-2 py-1">
+                        <option selected disabled>Selecione o Tipo de Item</option>
+                    </select>
+                </div>
+
+                <div class="p-4 inline-block">
+                    <select id="item_subtypes" name="item_subtype" class="capitalize rounded-full px-2 py-1">
+                        <option selected disabled>Selecione o Subtipo do Item</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="input_group_data_items">
+
             </div>
 
             <!-- TEXT AREA -->
