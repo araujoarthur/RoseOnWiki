@@ -141,7 +141,7 @@ CREATE TABLE weapons_data(
     subtype_id INTEGER DEFAULT NULL,
     name VARCHAR(70) NOT NULL,
     attack_power REAL NOT NULL,
-    wpn_precision REAL NOT NULL,
+    accuracy REAL NOT NULL,
     attack_speed REAL NOT NULL,
     attack_range REAL NOT NULL,
     status1_id INTEGER DEFAULT NULL,
@@ -304,14 +304,48 @@ SET @skaaj_id = LAST_INSERT_ID();
 INSERT INTO planets(name) VALUES('Hebarn');
 SET @hebarn_id = LAST_INSERT_ID();
 
+CREATE TABLE cities(
+    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    planet_id INTEGER NOT NULL,
+
+    FOREIGN KEY (planet_id) REFERENCES planets(id)
+);
+
+INSERT INTO cities(name, planet_id) VALUES('City of Junon Polis', @junon_id);
+INSERT INTO cities(name, planet_id) VALUES('Adventure Plains', @junon_id);
+INSERT INTO cities(name, planet_id) VALUES('Breezy Hills', @junon_id);
+INSERT INTO cities(name, planet_id) VALUES('El Verloon Desert', @junon_id);
+INSERT INTO cities(name, planet_id) VALUES('Valley of Luxem Tower', @junon_id);
+INSERT INTO cities(name, planet_id) VALUES('Anima Lake', @junon_id);
+INSERT INTO cities(name, planet_id) VALUES('Forest of Wisdom', @junon_id);
+INSERT INTO cities(name, planet_id) VALUES('Desert of the Dead', @junon_id);
+INSERT INTO cities(name, planet_id) VALUES('Gorge of Silence', @junon_id);
+INSERT INTO cities(name, planet_id) VALUES('Goblin Cave', @junon_id);
+INSERT INTO cities(name, planet_id) VALUES('Kenji Beach', @junon_id);
+
+INSERT INTO cities(name, planet_id) VALUES('Magic City of Eucar', @luna_id);
+INSERT INTO cities(name, planet_id) VALUES('Freezing Plateau', @junon_id);
+
 CREATE TABLE quests(
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     planet_id INTEGER DEFAULT NULL,
     city_id INTEGER DEFAULT NULL,
 
-    FOREIGN KEY (planet_id) REFERENCES planets(id)
+    FOREIGN KEY (planet_id) REFERENCES planets(id),
+    FOREIGN KEY (city_id) REFERENCES cities(id)
 );
+
+CREATE TABLE npcs(
+    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    planet_id INTEGER DEFAULT NULL,
+    city_id INTEGER DEFAULT NULL,
+
+    FOREIGN KEY (planet_id) REFERENCES planets(id),
+    FOREIGN KEY (city_id) REFERENCES cities(id)
+); 
 
 CREATE TABLE pages(
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,

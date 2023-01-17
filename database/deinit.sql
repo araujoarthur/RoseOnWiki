@@ -1,5 +1,7 @@
 DROP TABLE pages;
+DROP TABLE npcs;
 DROP TABLE quests;
+DROP TABLE cities;
 DROP TABLE planets;
 DROP TABLE gem_data;
 DROP TABLE consumable_data;

@@ -18,7 +18,12 @@ app = Flask(__name__)
 app.jinja_env.globals['wiki_version'] = '1.0.0'
 app.jinja_env.globals['project_status'] = 'development'
 
+
+# RELOAD APP WHEN TEMPLATE CHANGES
 app.config["TEMPLATES_AUTO_RELOAD"] = True  
+
+# UTF-8 in JSON Responses.
+app.config['JSON_AS_ASCII'] = False
 
 # Configure session to use filesystem (instead of signed cookies) as per pset9. Still trying to understand how it works
 # Why SESSION_PERMANENT = False if I can set a lifetime for a permanent session?
@@ -175,4 +180,47 @@ def page_not_found(e):
 
 @app.route('/fetchUrl')
 def fetch_url():
-    return json.dumps({'success' : 1, 'link':request.args.get('url'), "meta":{}}), 200, {'ContentType':'application/json'} 
+    return json.dumps({'success' : 1, 'link':request.args.get('url'), "meta":{}}), 200, {'ContentType':'application/json'}
+
+@app.route('/api/getItemTypes')
+@checkAllowance(3)
+def get_item_types():
+    return db.execute('SELECT * FROM item_types') 
+
+@app.route('/api/getItemSubtypes')
+@checkAllowance(3)
+def get_item_subtypes():
+    if not request.args.get('item_type'):
+        return {}
+    else:
+        return db.execute('SELECT * FROM item_subtype WHERE item_type_id = ?', request.args.get('item_type')) 
+
+@app.route('/api/getStatusTypes')
+@checkAllowance(3)
+def get_status_types():
+    return db.execute('SELECT * FROM status_types')
+
+@app.route('/api/getFieldsItemType')
+@checkAllowance(3)
+def get_fields_item_type():
+    if not request.args.get('id'):
+        return {}
+    else:
+        db_response = db.execute('SELECT * FROM item_types WHERE id = ?', request.args.get('id'))
+        if len(db_response) == 0 or len(db_response) > 1:
+            return {}
+        elif db_response[0]['name'] == 'arma':
+            return {'fields':[
+                {'name':'weapon_attack_power', 'placeholder':'Poder de Ataque'},
+                {'name':'weapon_precision', 'placeholder':'Precisão'},
+                {'name':'weapon_attack_speed', 'placeholder':'Velocidade de Ataque'},
+                {'name':'weapon_attack_range', 'placeholder':'Distância de Ataque'},
+                {'name':'weapon_status1_type', 'placeholder':'Selecione um Tipo de Status'},
+                {'name':'weapon_status1_value', 'placeholder':'Valor do Status'},
+                {'name':'weapon_status2_type', 'placeholder':'Selecione um Tipo de Status'},
+                {'name':'weapon_status2_value', 'placeholder':'Valor do Status'},
+                {'name':'weapon_status3_type', 'placeholder':'Selecione um Tipo de Status'},
+                {'name':'weapon_status3_value', 'placeholder':'Valor do Status'}
+            ]}
+        else:
+            return {}
