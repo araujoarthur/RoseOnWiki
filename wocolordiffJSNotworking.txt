@@ -1,0 +1,215 @@
+diff --git a/app.py b/app.py
+index 927cffb..6205817 100644
+--- a/app.py
++++ b/app.py
+@@ -18,8 +18,13 @@ app = Flask(__name__)
+ app.jinja_env.globals['wiki_version'] = '1.0.0'
+ app.jinja_env.globals['project_status'] = 'development'
+ 
++
++# RELOAD APP WHEN TEMPLATE CHANGES
+ app.config["TEMPLATES_AUTO_RELOAD"] = True  
+ 
++# UTF-8 in JSON Responses.
++app.config['JSON_AS_ASCII'] = False
++
+ # Configure session to use filesystem (instead of signed cookies) as per pset9. Still trying to understand how it works
+ # Why SESSION_PERMANENT = False if I can set a lifetime for a permanent session?
+ 
+@@ -175,4 +180,47 @@ def page_not_found(e):
+ 
+ @app.route('/fetchUrl')
+ def fetch_url():
+-    return json.dumps({'success' : 1, 'link':request.args.get('url'), "meta":{}}), 200, {'ContentType':'application/json'} 
+\ No newline at end of file
++    return json.dumps({'success' : 1, 'link':request.args.get('url'), "meta":{}}), 200, {'ContentType':'application/json'}
++
++@app.route('/api/getItemTypes')
++@checkAllowance(3)
++def get_item_types():
++    return db.execute('SELECT * FROM item_types') 
++
++@app.route('/api/getItemSubtypes')
++@checkAllowance(3)
++def get_item_subtypes():
++    if not request.args.get('item_type'):
++        return {}
++    else:
++        return db.execute('SELECT * FROM item_subtype WHERE item_type_id = ?', request.args.get('item_type')) 
++
++@app.route('/api/getStatusTypes')
++@checkAllowance(3)
++def get_status_types():
++    return db.execute('SELECT * FROM status_types')
++
++@app.route('/api/getFieldsItemType')
++@checkAllowance(3)
++def get_fields_item_type():
++    if not request.args.get('id'):
++        return {}
++    else:
++        db_response = db.execute('SELECT * FROM item_types WHERE id = ?', request.args.get('id'))
++        if len(db_response) == 0 or len(db_response) > 1:
++            return {}
++        elif db_response[0]['name'] == 'arma':
++            return {'fields':[
++                {'name':'weapon_attack_power', 'placeholder':'Poder de Ataque'},
++                {'name':'weapon_precision', 'placeholder':'Precisão'},
++                {'name':'weapon_attack_speed', 'placeholder':'Velocidade de Ataque'},
++                {'name':'weapon_attack_range', 'placeholder':'Distância de Ataque'},
++                {'name':'weapon_status1_type', 'placeholder':'Selecione um Tipo de Status'},
++                {'name':'weapon_status1_value', 'placeholder':'Valor do Status'},
++                {'name':'weapon_status2_type', 'placeholder':'Selecione um Tipo de Status'},
++                {'name':'weapon_status2_value', 'placeholder':'Valor do Status'},
++                {'name':'weapon_status3_type', 'placeholder':'Selecione um Tipo de Status'},
++                {'name':'weapon_status3_value', 'placeholder':'Valor do Status'}
++            ]}
++        else:
++            return {}
+\ No newline at end of file
+diff --git a/database/deinit.sql b/database/deinit.sql
+index 686ea33..b308091 100644
+--- a/database/deinit.sql
++++ b/database/deinit.sql
+@@ -1,5 +1,7 @@
+ DROP TABLE pages;
++DROP TABLE npcs;
+ DROP TABLE quests;
++DROP TABLE cities;
+ DROP TABLE planets;
+ DROP TABLE gem_data;
+ DROP TABLE consumable_data;
+diff --git a/database/init.sql b/database/init.sql
+index 8420ebe..3f2ad1a 100644
+--- a/database/init.sql
++++ b/database/init.sql
+@@ -141,7 +141,7 @@ CREATE TABLE weapons_data(
+     subtype_id INTEGER DEFAULT NULL,
+     name VARCHAR(70) NOT NULL,
+     attack_power REAL NOT NULL,
+-    wpn_precision REAL NOT NULL,
++    accuracy REAL NOT NULL,
+     attack_speed REAL NOT NULL,
+     attack_range REAL NOT NULL,
+     status1_id INTEGER DEFAULT NULL,
+@@ -304,15 +304,49 @@ SET @skaaj_id = LAST_INSERT_ID();
+ INSERT INTO planets(name) VALUES('Hebarn');
+ SET @hebarn_id = LAST_INSERT_ID();
+ 
++CREATE TABLE cities(
++    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
++    name VARCHAR(100) NOT NULL,
++    planet_id INTEGER NOT NULL,
++
++    FOREIGN KEY (planet_id) REFERENCES planets(id)
++);
++
++INSERT INTO cities(name, planet_id) VALUES('City of Junon Polis', @junon_id);
++INSERT INTO cities(name, planet_id) VALUES('Adventure Plains', @junon_id);
++INSERT INTO cities(name, planet_id) VALUES('Breezy Hills', @junon_id);
++INSERT INTO cities(name, planet_id) VALUES('El Verloon Desert', @junon_id);
++INSERT INTO cities(name, planet_id) VALUES('Valley of Luxem Tower', @junon_id);
++INSERT INTO cities(name, planet_id) VALUES('Anima Lake', @junon_id);
++INSERT INTO cities(name, planet_id) VALUES('Forest of Wisdom', @junon_id);
++INSERT INTO cities(name, planet_id) VALUES('Desert of the Dead', @junon_id);
++INSERT INTO cities(name, planet_id) VALUES('Gorge of Silence', @junon_id);
++INSERT INTO cities(name, planet_id) VALUES('Goblin Cave', @junon_id);
++INSERT INTO cities(name, planet_id) VALUES('Kenji Beach', @junon_id);
++
++INSERT INTO cities(name, planet_id) VALUES('Magic City of Eucar', @luna_id);
++INSERT INTO cities(name, planet_id) VALUES('Freezing Plateau', @junon_id);
++
+ CREATE TABLE quests(
+     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+     name VARCHAR(100) NOT NULL,
+     planet_id INTEGER DEFAULT NULL,
+     city_id INTEGER DEFAULT NULL,
+ 
+-    FOREIGN KEY (planet_id) REFERENCES planets(id)
++    FOREIGN KEY (planet_id) REFERENCES planets(id),
++    FOREIGN KEY (city_id) REFERENCES cities(id)
+ );
+ 
++CREATE TABLE npcs(
++    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
++    name VARCHAR(100) NOT NULL,
++    planet_id INTEGER DEFAULT NULL,
++    city_id INTEGER DEFAULT NULL,
++
++    FOREIGN KEY (planet_id) REFERENCES planets(id),
++    FOREIGN KEY (city_id) REFERENCES cities(id)
++); 
++
+ CREATE TABLE pages(
+     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+     page_type INTEGER NOT NULL,
+diff --git a/static/newPage.js b/static/newPage.js
+index a1d1c67..94f0b5b 100644
+--- a/static/newPage.js
++++ b/static/newPage.js
+@@ -19,6 +19,13 @@ document.addEventListener('DOMContentLoaded', function(){
+     let editorQuest = undefined;
+     let editorItem = undefined;
+ 
++    /* To Do:
++        Build Up Items/NPC and Guide Forms and Database.
++        Build Up AJAX Fetch for inserting pages into db.
++        Searching pages.
++
++    */
++
+     guiaButton.addEventListener('click', function(){
+         questSection.classList.remove('block');
+         npcSection.classList.remove('block');
+@@ -684,6 +691,51 @@ document.addEventListener('DOMContentLoaded', function(){
+             });
+         }
+ 
++        selectItemTypes = document.querySelector('#item_types')
++        fetch('/api/getItemTypes').then((response) => response.json()).then((data) => {
++            for(let item of data){
++                let opt = document.createElement('option');
++                opt.value = item.id;
++                opt.innerHTML = item.name;
++                opt.classList.add('capitalize');
++                selectItemTypes.appendChild(opt);
++            }
++        });
++
++        selectItemSubtypes = document.querySelector('#item_subtypes');
++        selectItemTypes.addEventListener('change', () => {
++            /* Lembrar de retirar itens dos inputs que vem depois desse em caso de mudança. */
++            fetch('/api/getItemSubtypes?item_type='+selectItemTypes.value).then((response) => response.json()).then((data) =>{
++                selectItemSubtypes.innerHTML = ''
++                for(let item of data){
++                    let opt = document.createElement('option');
++                    opt.value = item.id;
++                    opt.innerHTML = item.name;
++                    opt.classList.add('capitalize');
++                    selectItemSubtypes.appendChild(opt);
++                } 
++            });
++        });
++
++        selectItemTypes.addEventListener('change', async function() {
++            async function getStatus(){
++                const respons = await fetch('/api/getStatusTypes');
++                let jsonObj = await respons.json();
++
++                return jsonObj;
++            }
++
++            async function getFields(id){
++                const respons = await fetch('/api/getFieldsItemType?id='+id);
++                let jsonObj = await respons.json();
++
++                return jsonObj; 
++            }
++
++            let fields = await getFields(selectItemTypes.value);
++            alert(JSON.stringify(fields))
++        });
++
+     });
+ });
+ 

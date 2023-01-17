@@ -1,0 +1,70 @@
+diff --git a/static/newPage.js b/static/newPage.js
+index a1d1c67..94f0b5b 100644
+--- a/static/newPage.js
++++ b/static/newPage.js
+@@ -19,6 +19,13 @@ document.addEventListener('DOMContentLoaded', function(){
+     let editorQuest = undefined;
+     let editorItem = undefined;
+ 
++    /* To Do:
++        Build Up Items/NPC and Guide Forms and Database.
++        Build Up AJAX Fetch for inserting pages into db.
++        Searching pages.
++
++    */
++
+     guiaButton.addEventListener('click', function(){
+         questSection.classList.remove('block');
+         npcSection.classList.remove('block');
+@@ -684,6 +691,51 @@ document.addEventListener('DOMContentLoaded', function(){
+             });
+         }
+ 
++        selectItemTypes = document.querySelector('#item_types')
++        fetch('/api/getItemTypes').then((response) => response.json()).then((data) => {
++            for(let item of data){
++                let opt = document.createElement('option');
++                opt.value = item.id;
++                opt.innerHTML = item.name;
++                opt.classList.add('capitalize');
++                selectItemTypes.appendChild(opt);
++            }
++        });
++
++        selectItemSubtypes = document.querySelector('#item_subtypes');
++        selectItemTypes.addEventListener('change', () => {
++            /* Lembrar de retirar itens dos inputs que vem depois desse em caso de mudança. */
++            fetch('/api/getItemSubtypes?item_type='+selectItemTypes.value).then((response) => response.json()).then((data) =>{
++                selectItemSubtypes.innerHTML = ''
++                for(let item of data){
++                    let opt = document.createElement('option');
++                    opt.value = item.id;
++                    opt.innerHTML = item.name;
++                    opt.classList.add('capitalize');
++                    selectItemSubtypes.appendChild(opt);
++                } 
++            });
++        });
++
++        selectItemTypes.addEventListener('change', async function() {
++            async function getStatus(){
++                const respons = await fetch('/api/getStatusTypes');
++                let jsonObj = await respons.json();
++
++                return jsonObj;
++            }
++
++            async function getFields(id){
++                const respons = await fetch('/api/getFieldsItemType?id='+id);
++                let jsonObj = await respons.json();
++
++                return jsonObj; 
++            }
++
++            let fields = await getFields(selectItemTypes.value);
++            alert(JSON.stringify(fields))
++        });
++
+     });
+ });
+ 
