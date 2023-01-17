@@ -47,6 +47,10 @@ class aagSQLmanager(object):
         self.connection.close()
 
         return None
+    
+    def close(self):
+        self.__del__()
+        return None
 
 
     def refreshConnection(self):
@@ -138,7 +142,7 @@ class aagSQLmanager(object):
                 return list(self.cursor)
         except Exception as e:
             print(traceback.format_exc())
-            return False
+            raise
         
         
         

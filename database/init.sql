@@ -78,7 +78,7 @@ CREATE TABLE item_subtype(
     name VARCHAR(70) NOT NULL,
     item_type_id INTEGER NOT NULL,
 
-    FOREIGN KEY (item_type_id) REFERENCES item_types(id)
+    FOREIGN KEY (item_type_id) REFERENCES item_types(id) ON DELETE CASCADE
 );
 
 INSERT INTO item_subtype(name, item_type_id) VALUES('Arco', @arma_id);
@@ -135,155 +135,62 @@ INSERT INTO item_subtype(name, item_type_id) VALUES('Material', @material_id);
 INSERT INTO item_subtype(name, item_type_id) VALUES('Material de Pedra', @material_id);
 INSERT INTO item_subtype(name, item_type_id) VALUES('Material de Madeira', @material_id);
 
-CREATE TABLE weapons_data(
+CREATE TABLE content(
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    type_id INTEGER NOT NULL DEFAULT @arma_id,
+    name VARCHAR(100) NOT NULL,
+    type INTEGER NOT NULL,
+
+    FOREIGN KEY (type) REFERENCES page_types(id) ON DELETE CASCADE
+);
+
+CREATE TABLE items(
+    id INTEGER PRIMARY KEY,
+    type_id INTEGER NOT NULL,
     subtype_id INTEGER DEFAULT NULL,
-    name VARCHAR(70) NOT NULL,
+
+    FOREIGN KEY (id) REFERENCES content(id) ON DELETE CASCADE,
+    FOREIGN KEY (type_id) REFERENCES item_types(id) ON DELETE CASCADE,
+    FOREIGN KEY (subtype_id) REFERENCES item_subtype(id) ON DELETE CASCADE
+);
+
+CREATE TABLE weapons_data(
+    id INTEGER PRIMARY KEY,
     attack_power REAL NOT NULL,
     accuracy REAL NOT NULL,
     attack_speed REAL NOT NULL,
     attack_range REAL NOT NULL,
-    status1_id INTEGER DEFAULT NULL,
-    status1_val INTEGER DEFAULT NULL,
-    status2_id INTEGER DEFAULT NULL,
-    status2_val INTEGER DEFAULT NULL,
-    status3_id INTEGER DEFAULT NULL,
-    status3_val INTEGER DEFAULT NULL,
 
-    FOREIGN KEY (subtype_id) REFERENCES item_subtype(id),
-    FOREIGN KEY (status1_id) REFERENCES status_types(id),
-    FOREIGN KEY (status2_id) REFERENCES status_types(id),
-    FOREIGN KEY (status3_id) REFERENCES status_types(id)
-
+    FOREIGN KEY (id) REFERENCES items(id) ON DELETE CASCADE
 );
 
-CREATE TABLE shield_data(
-    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    type_id INTEGER  NOT NULL DEFAULT @escudo_id,
-    subtype_id INTEGER DEFAULT NULL,
-    name VARCHAR(70) NOT NULL,
+CREATE TABLE deffensive_items(
+    id INTEGER PRIMARY KEY,
     defense_power REAL NOT NULL,
     evasion REAL NOT NULL,
     magical_resistence REAL NOT NULL,
-    status1_id INTEGER DEFAULT NULL,
-    status1_val INTEGER DEFAULT NULL,
-    status2_id INTEGER DEFAULT NULL,
-    status2_val INTEGER DEFAULT NULL,
-    status3_id INTEGER DEFAULT NULL,
-    status3_val INTEGER DEFAULT NULL,
-
-    FOREIGN KEY (subtype_id) REFERENCES item_subtype(id),
-    FOREIGN KEY (status1_id) REFERENCES status_types(id),
-    FOREIGN KEY (status2_id) REFERENCES status_types(id),
-    FOREIGN KEY (status3_id) REFERENCES status_types(id)
-);
-
-CREATE TABLE mask_data(
-    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    type_id INTEGER  NOT NULL DEFAULT @mascara_id,
-    subtype_id INTEGER DEFAULT NULL,
-    name VARCHAR(70) NOT NULL,
-    defense_power REAL NOT NULL,
-    evasion REAL NOT NULL,
-    magical_resistence REAL NOT NULL,
-        status1_id INTEGER DEFAULT NULL,
-    status1_val INTEGER DEFAULT NULL,
-    status2_id INTEGER DEFAULT NULL,
-    status2_val INTEGER DEFAULT NULL,
-    status3_id INTEGER DEFAULT NULL,
-    status3_val INTEGER DEFAULT NULL,
-
-    FOREIGN KEY (subtype_id) REFERENCES item_subtype(id),
-    FOREIGN KEY (status1_id) REFERENCES status_types(id),
-    FOREIGN KEY (status2_id) REFERENCES status_types(id),
-    FOREIGN KEY (status3_id) REFERENCES status_types(id)
-);
-
-CREATE TABLE backshield_data(
-    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    type_id INTEGER  NOT NULL DEFAULT @costas_id,
-    subtype_id INTEGER DEFAULT NULL,
-    name VARCHAR(70) NOT NULL,
-    defense_power REAL NOT NULL,
-    evasion REAL NOT NULL,
-    magical_resistence REAL NOT NULL,
-    status1_id INTEGER DEFAULT NULL,
-    status1_val INTEGER DEFAULT NULL,
-    status2_id INTEGER DEFAULT NULL,
-    status2_val INTEGER DEFAULT NULL,
-    status3_id INTEGER DEFAULT NULL,
-    status3_val INTEGER DEFAULT NULL,
-
-    FOREIGN KEY (subtype_id) REFERENCES item_subtype(id),
-    FOREIGN KEY (status1_id) REFERENCES status_types(id),
-    FOREIGN KEY (status2_id) REFERENCES status_types(id),
-    FOREIGN KEY (status3_id) REFERENCES status_types(id)
-);
-
-CREATE TABLE armor_data(
-    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    type_id INTEGER  NOT NULL DEFAULT @armadura_id,
-    subtype_id INTEGER DEFAULT NULL,
-    name VARCHAR(70) NOT NULL,
-    defense_power REAL NOT NULL,
-    evasion REAL NOT NULL,
-    magical_resistence REAL NOT NULL,
-    status1_id INTEGER DEFAULT NULL,
-    status1_val INTEGER DEFAULT NULL,
-    status2_id INTEGER DEFAULT NULL,
-    status2_val INTEGER DEFAULT NULL,
-    status3_id INTEGER DEFAULT NULL,
-    status3_val INTEGER DEFAULT NULL,
-
-    FOREIGN KEY (subtype_id) REFERENCES item_subtype(id),
-    FOREIGN KEY (status1_id) REFERENCES status_types(id),
-    FOREIGN KEY (status2_id) REFERENCES status_types(id),
-    FOREIGN KEY (status3_id) REFERENCES status_types(id)
+    
+    FOREIGN KEY (id) REFERENCES items(id) ON DELETE CASCADE
 );
 
 CREATE TABLE jewel_data(
-    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    type_id INTEGER  NOT NULL DEFAULT @joia_id,
-    subtype_id INTEGER DEFAULT NULL,
-    name VARCHAR(70) NOT NULL,
+    id INTEGER PRIMARY KEY,
     quality INTEGER NOT NULL,
-    status1_id INTEGER DEFAULT NULL,
-    status1_val INTEGER DEFAULT NULL,
-    status2_id INTEGER DEFAULT NULL,
-    status2_val INTEGER DEFAULT NULL,
-    status3_id INTEGER DEFAULT NULL,
-    status3_val INTEGER DEFAULT NULL,
 
-    FOREIGN KEY (subtype_id) REFERENCES item_subtype(id),
-    FOREIGN KEY (status1_id) REFERENCES status_types(id),
-    FOREIGN KEY (status2_id) REFERENCES status_types(id),
-    FOREIGN KEY (status3_id) REFERENCES status_types(id)
+    FOREIGN KEY (id) REFERENCES items(id) ON DELETE CASCADE
 );
 
 CREATE TABLE consumable_data(
-    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    type_id INTEGER  NOT NULL DEFAULT @joia_id,
-    subtype_id INTEGER DEFAULT NULL,
-    name VARCHAR(70) NOT NULL,
+    id INTEGER PRIMARY KEY,
+    effect VARCHAR(100) NOT NULL,
 
-    FOREIGN KEY (subtype_id) REFERENCES item_subtype(id)
+    FOREIGN KEY (id) REFERENCES items(id) ON DELETE CASCADE
 );
 
 CREATE TABLE gem_data(
-    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    type_id INTEGER NOT NULL DEFAULT @material_id,
-    subtype_id INTEGER NOT NULL DEFAULT @gem_id,
-    name VARCHAR(40) NOT NULL,
+    id INTEGER PRIMARY KEY,
     grade INTEGER NOT NULL,
-    status1_id INTEGER NOT NULL,
-    status1_val INTEGER NOT NULL,
-    status2_id INTEGER DEFAULT NULL,
-    status2_val INTEGER DEFAULT NULL,
 
-    FOREIGN KEY (subtype_id) REFERENCES item_subtype(id),
-    FOREIGN KEY (status1_id) REFERENCES status_types(id),
-    FOREIGN KEY (status2_id) REFERENCES status_types(id)
+    FOREIGN KEY (id) REFERENCES items(id) ON DELETE CASCADE
 );
 
 CREATE TABLE planets(
@@ -309,7 +216,7 @@ CREATE TABLE cities(
     name VARCHAR(100) NOT NULL,
     planet_id INTEGER NOT NULL,
 
-    FOREIGN KEY (planet_id) REFERENCES planets(id)
+    FOREIGN KEY (planet_id) REFERENCES planets(id) ON DELETE CASCADE
 );
 
 INSERT INTO cities(name, planet_id) VALUES('City of Junon Polis', @junon_id);
@@ -327,33 +234,31 @@ INSERT INTO cities(name, planet_id) VALUES('Kenji Beach', @junon_id);
 INSERT INTO cities(name, planet_id) VALUES('Magic City of Eucar', @luna_id);
 INSERT INTO cities(name, planet_id) VALUES('Freezing Plateau', @junon_id);
 
-CREATE TABLE quests(
+CREATE TABLE quest(
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    planet_id INTEGER DEFAULT NULL,
     city_id INTEGER DEFAULT NULL,
 
-    FOREIGN KEY (planet_id) REFERENCES planets(id),
-    FOREIGN KEY (city_id) REFERENCES cities(id)
+    FOREIGN KEY (city_id) REFERENCES cities(id) ON DELETE CASCADE
 );
 
 CREATE TABLE npcs(
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
-    planet_id INTEGER DEFAULT NULL,
     city_id INTEGER DEFAULT NULL,
 
-    FOREIGN KEY (planet_id) REFERENCES planets(id),
-    FOREIGN KEY (city_id) REFERENCES cities(id)
+    FOREIGN KEY (city_id) REFERENCES cities(id) ON DELETE CASCADE
 ); 
 
 CREATE TABLE pages(
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    created_by INTEGER NOT NULL,
+    created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
     page_type INTEGER NOT NULL,
-    content_id INTEGER NOT NULL,
+    content_id INTEGER DEFAULT NULL,
     content LONGTEXT NOT NULL,
 
-    FOREIGN KEY (page_type) REFERENCES page_types(id) 
+    FOREIGN KEY (created_by) REFERENCES accounts(id) ON DELETE CASCADE,
+    FOREIGN KEY (page_type) REFERENCES page_types(id) ON DELETE CASCADE
 );
 
 

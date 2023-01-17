@@ -1,0 +1,13 @@
+diff --git a/static/newPage.js b/static/newPage.js
+index 57bddd3..94f0b5b 100644
+--- a/static/newPage.js
++++ b/static/newPage.js
+@@ -717,7 +717,7 @@ document.addEventListener('DOMContentLoaded', function(){
+             });
+         });
+ 
+-        selectItemSubTypes.addEventListener('change', async function() {
++        selectItemTypes.addEventListener('change', async function() {
+             async function getStatus(){
+                 const respons = await fetch('/api/getStatusTypes');
+                 let jsonObj = await respons.json();

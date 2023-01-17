@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="0c6149b8-1395-4a4c-865c-b89c6fb09601" name="roseonwiki@localhost Mapping">
+      <data-sources db="4550eecc-9593-4df3-bf6d-64ed00ca6902" />
+      <scope>
+        <node kind="database" negative="1" />
+      </scope>
+    </mapping>
+  </component>
+</project>
