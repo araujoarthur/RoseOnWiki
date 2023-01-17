@@ -717,7 +717,7 @@ document.addEventListener('DOMContentLoaded', function(){
             });
         });
 
-        selectItemTypes.addEventListener('change', async function() {
+        selectItemSubTypes.addEventListener('change', async function() {
             async function getStatus(){
                 const respons = await fetch('/api/getStatusTypes');
                 let jsonObj = await respons.json();
