@@ -193,6 +193,16 @@ CREATE TABLE gem_data(
     FOREIGN KEY (id) REFERENCES items(id) ON DELETE CASCADE
 );
 
+CREATE TABLE item_status(
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    item_id INTEGER NOT NULL,
+    type_id INTEGER NOT NULL,
+    value INTEGER NOT NULL,
+
+    FOREIGN KEY (item_id) REFERENCES items(id),
+    FOREIGN KEY (type_id) REFERENCES status_types(id)
+);
+
 CREATE TABLE planets(
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(30) NOT NULL
@@ -234,7 +244,7 @@ INSERT INTO cities(name, planet_id) VALUES('Kenji Beach', @junon_id);
 INSERT INTO cities(name, planet_id) VALUES('Magic City of Eucar', @luna_id);
 INSERT INTO cities(name, planet_id) VALUES('Freezing Plateau', @junon_id);
 
-CREATE TABLE quest(
+CREATE TABLE quests(
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     city_id INTEGER DEFAULT NULL,
 
@@ -249,6 +259,13 @@ CREATE TABLE npcs(
     FOREIGN KEY (city_id) REFERENCES cities(id) ON DELETE CASCADE
 ); 
 
+CREATE TABLE guias(
+    id INTEGER PRIMARY KEY,
+    subject VARCHAR(60) NOT NULL,
+
+    FOREIGN KEY (id) REFERENCES content(id)
+);
+
 CREATE TABLE pages(
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     created_by INTEGER NOT NULL,
@@ -258,7 +275,8 @@ CREATE TABLE pages(
     content LONGTEXT NOT NULL,
 
     FOREIGN KEY (created_by) REFERENCES accounts(id) ON DELETE CASCADE,
-    FOREIGN KEY (page_type) REFERENCES page_types(id) ON DELETE CASCADE
+    FOREIGN KEY (page_type) REFERENCES page_types(id) ON DELETE CASCADE,
+    FOREIGN KEY (content_id) REFERENCES content(id) ON DELETE CASCADE
 );
 
 

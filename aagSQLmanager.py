@@ -39,19 +39,14 @@ class aagSQLmanager(object):
         
         return None
     
-
-    def __del__(self):
-        """
-            idmSQLmanager class finalizer
-        """
-        self.connection.close()
-
-        return None
     
     def close(self):
-        self.__del__()
+        """
+            Close Connection
+        """
+        if self.connection.open:
+            self.connection.close()
         return None
-
 
     def refreshConnection(self):
         try:
@@ -142,7 +137,8 @@ class aagSQLmanager(object):
                 return list(self.cursor)
         except Exception as e:
             print(traceback.format_exc())
-            raise
+            return False
+            #raise
         
         
         

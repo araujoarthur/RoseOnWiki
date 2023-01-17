@@ -703,6 +703,7 @@ document.addEventListener('DOMContentLoaded', function(){
         });
 
         selectItemSubtypes = document.querySelector('#item_subtypes');
+
         selectItemTypes.addEventListener('change', () => {
             /* Lembrar de retirar itens dos inputs que vem depois desse em caso de mudança. */
             fetch('/api/getItemSubtypes?item_type='+selectItemTypes.value).then((response) => response.json()).then((data) =>{

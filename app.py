@@ -1,4 +1,4 @@
-from flask import Flask, flash, redirect, render_template, request, session, url_for, abort
+from flask import Flask, flash, redirect, render_template, request, session, url_for, abort, g
 from flask_session import Session
 import json
 
@@ -41,9 +41,25 @@ dbconfig = {
     'port':3306,
     'database':'roseonwiki'
 }
-db = aagSQLmanager(**dbconfig)
+
+def get_db():
+    if not ('db' in g):
+        g.db = aagSQLmanager(**dbconfig)
+    
+    return g.db
+
+@app.teardown_appcontext
+def teardown_db(exception):
+    db = g.pop('db', None)
+
+    if db is not None:
+        db.close()
 
 # Taken from pset 9 to ensure responses aren't cached
+
+@app.before_request
+def before_request_callback():
+    get_db()
 
 @app.after_request
 def after_request(response):
@@ -53,22 +69,16 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def index():
-    if request.method == 'POST':
-        pass
-    else:
-        if not session.get('user_id'):
-            return render_template('index.html')
-        else:
-            return redirect('/profile/'+session['user_info']['username'])
+    return render_template('index.html')
 
 # Profile Routes
 
 @app.route('/profile/<string:username>')
 @loginRequired
 def profile(username):
-    db_res = db.execute('SELECT username,created FROM accounts WHERE username = ?', username.lower())
+    db_res = g.db.execute('SELECT username,created FROM accounts WHERE username = ?', username.lower())
     if db_res == False:
         return redirect('error')
     elif len(db_res) == 0:
@@ -82,9 +92,9 @@ def profile(username):
 @loginRequired
 @checkAllowance(3)
 def nova_pagina():
-    db_res = db.execute("SELECT * FROM page_types")
+    db_res = g.db.execute("SELECT * FROM page_types")
     allowed_pages_relation = {d['name']:d['id'] for d in db_res}
-    planets = db.execute("SELECT * FROM planets")
+    planets = g.db.execute("SELECT * FROM planets")
     return render_template('nova_pagina.html', page_types=db_res, allowed_pages_relation=allowed_pages_relation, planets=planets)
 
 
@@ -108,13 +118,13 @@ def registrar():
             return render_template('register.html')
         else:
             sent_username = request.form.get('username').lower()
-            db_usrs = db.execute('SELECT username FROM accounts WHERE username = ?', sent_username)
+            db_usrs = g.db.execute('SELECT username FROM accounts WHERE username = ?', sent_username)
             if db_usrs == False or len(db_usrs) > 0:
                 flash('Este usuário já existe.', category='error')
                 return redirect('/registrar')
             else:
                 hash_password = generate_password_hash(request.form.get('password'))
-                db_res = db.execute("INSERT INTO accounts(username, password) VALUES(?,?)", sent_username, hash_password)
+                db_res = g.db.execute("INSERT INTO accounts(username, password) VALUES(?,?)", sent_username, hash_password)
                 if db_res != False:
                     flash('Conta criada com sucesso!', category='success')
                 else:
@@ -135,7 +145,7 @@ def login():
             flash('Você não inseriu uma senha', category='error')
             return redirect('/login')
         else:
-            db_res = db.execute('SELECT * FROM accounts WHERE username = ?', request.form.get('username').lower())
+            db_res = g.db.execute('SELECT * FROM accounts WHERE username = ?', request.form.get('username').lower())
             if db_res == False or len(db_res) > 1:
                 flash('Algo deu errado!', category='error')
                 return redirect('/login')
@@ -185,7 +195,7 @@ def fetch_url():
 @app.route('/api/getItemTypes')
 @checkAllowance(3)
 def get_item_types():
-    return db.execute('SELECT * FROM item_types') 
+    return g.db.execute('SELECT * FROM item_types') 
 
 @app.route('/api/getItemSubtypes')
 @checkAllowance(3)
@@ -193,12 +203,12 @@ def get_item_subtypes():
     if not request.args.get('item_type'):
         return {}
     else:
-        return db.execute('SELECT * FROM item_subtype WHERE item_type_id = ?', request.args.get('item_type')) 
+        return g.db.execute('SELECT * FROM item_subtype WHERE item_type_id = ?', request.args.get('item_type')) 
 
 @app.route('/api/getStatusTypes')
 @checkAllowance(3)
 def get_status_types():
-    return db.execute('SELECT * FROM status_types')
+    return g.db.execute('SELECT * FROM status_types')
 
 @app.route('/api/getFieldsItemType')
 @checkAllowance(3)
@@ -206,7 +216,7 @@ def get_fields_item_type():
     if not request.args.get('id'):
         return {}
     else:
-        db_response = db.execute('SELECT * FROM item_types WHERE id = ?', request.args.get('id'))
+        db_response = g.db.execute('SELECT * FROM item_types WHERE id = ?', request.args.get('id'))
         if len(db_response) == 0 or len(db_response) > 1:
             return {}
         elif db_response[0]['name'] == 'arma':
