@@ -1,4 +1,4 @@
-from flask import Flask, flash, redirect, render_template, request, session, url_for, abort, g
+from flask import Flask, flash, redirect, render_template, request, session, url_for, abort, g, Response
 from flask_session import Session
 import json
 
@@ -217,20 +217,47 @@ def get_fields_item_type():
         return {}
     else:
         db_response = g.db.execute('SELECT * FROM item_types WHERE id = ?', request.args.get('id'))
+        db_status = g.db.execute('SELECT * FROM status_types')
+        
         if len(db_response) == 0 or len(db_response) > 1:
             return {}
         elif db_response[0]['name'] == 'arma':
             return {'fields':[
-                {'name':'weapon_attack_power', 'placeholder':'Poder de Ataque'},
-                {'name':'weapon_precision', 'placeholder':'Precisão'},
-                {'name':'weapon_attack_speed', 'placeholder':'Velocidade de Ataque'},
-                {'name':'weapon_attack_range', 'placeholder':'Distância de Ataque'},
-                {'name':'weapon_status1_type', 'placeholder':'Selecione um Tipo de Status'},
-                {'name':'weapon_status1_value', 'placeholder':'Valor do Status'},
-                {'name':'weapon_status2_type', 'placeholder':'Selecione um Tipo de Status'},
-                {'name':'weapon_status2_value', 'placeholder':'Valor do Status'},
-                {'name':'weapon_status3_type', 'placeholder':'Selecione um Tipo de Status'},
-                {'name':'weapon_status3_value', 'placeholder':'Valor do Status'}
+                {'type':'input', 'required':True, 'name':'weapon_attack_power', 'placeholder':'Poder de Ataque'},
+                {'type':'input', 'required':True, 'name':'weapon_precision', 'placeholder':'Precisão'},
+                {'type':'input', 'required':True, 'name':'weapon_attack_speed', 'placeholder':'Velocidade de Ataque'},
+                {'type':'input', 'required':True, 'name':'weapon_attack_range', 'placeholder':'Distância de Ataque'},
+                {'type':'select', 'required':False, 'options':db_status, 'name':'weapon_status1_type', 'placeholder':'Selecione um Tipo de Status'},
+                {'type':'input', 'required':False, 'name':'weapon_status1_value', 'placeholder':'Valor do Status'},
+                {'type':'select', 'required':False, 'options':db_status, 'name':'weapon_status2_type', 'placeholder':'Selecione um Tipo de Status'},
+                {'type':'input', 'required':False, 'name':'weapon_status2_value', 'placeholder':'Valor do Status'},
+                {'type':'select', 'required':False, 'options':db_status, 'name':'weapon_status3_type', 'placeholder':'Selecione um Tipo de Status'},
+                {'type':'input', 'required':False, 'name':'weapon_status3_value', 'placeholder':'Valor do Status'}
             ]}
         else:
             return {}
+
+@app.route('/api/insertItem', methods=['POST'])
+@checkAllowance(3)
+def insert_item():
+    print()
+    print(request.data)
+    data = request.get_json()
+    print(data)
+    if request.is_json:
+        if not request.json.get('item_type'):
+            return Response("Missing Item Type", 400)
+        else:
+            if int(request.json.get('item_type')) == 1:
+                requiredFields = ['item_title', 'item_subtype', 'weapon_attack_power', 'weapon_precision', "weapon_attack_speed", "weapon_attack_range"]
+                if all(map(lambda x: x in requiredFields, requiredFields)):
+                    content_response = g.db.execute('INSERT INTO content(name, type) VALUES(?,?)', request.json.get('item_title'), 4);
+                    if (content_response != False) and (content_response != None):
+                        item_response = g.db.execute('INSERT INTO item(id, type_id, subtype_id) VALUES(?, ?, ?)', content_response, request.json.get['item_type'], request.json.get['item_subtype'])
+                        # TO CONTINUE
+                    else:
+                        return Response("Something wen't wrong with DB operations", 500)
+                else:
+                     return Response("Missing Field", 400)
+    else:
+        return Response("No JSON Payload", 400)

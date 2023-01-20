@@ -1,32 +1,34 @@
 document.addEventListener('DOMContentLoaded', function(){
-    guiaButton = document.querySelector('#guiaButton');
-    questButton = document.querySelector('#questButton');
-    npcButton = document.querySelector('#npcButton');
-    itemButton = document.querySelector('#itemButton');
+  
+  const DEFAULT_OPTION = -2;
+  let fieldList = [];
 
-    sendGuiaButton = document.querySelector('#createGuidePage');
-    sendQuestButton = document.querySelector('#createQuestPage');
-    sendNpcButton = document.querySelector('#createNPCPage');
-    sendItemButton = document.querySelector('#createItemPage');
+  guiaButton = document.querySelector('#guiaButton');
+  questButton = document.querySelector('#questButton');
+  npcButton = document.querySelector('#npcButton');
+  itemButton = document.querySelector('#itemButton');
 
-    guiaSection = document.querySelector("#guiaSection");
-    questSection = document.querySelector("#questSection");
-    npcSection = document.querySelector("#npcSection");
-    itemSection = document.querySelector("#itemSection");
+  sendGuiaButton = document.querySelector('#createGuidePage');
+  sendQuestButton = document.querySelector('#createQuestPage');
+  sendNpcButton = document.querySelector('#createNPCPage');
+  sendItemButton = document.querySelector('#createItemPage');
 
-    let editorGuia = undefined;
-    let editorNPC = undefined;
-    let editorQuest = undefined;
-    let editorItem = undefined;
+  guiaSection = document.querySelector("#guiaSection");
+  questSection = document.querySelector("#questSection");
+  npcSection = document.querySelector("#npcSection");
+  itemSection = document.querySelector("#itemSection");
 
-    /* To Do:
-        Build Up Items/NPC and Guide Forms and Database.
-        Build Up AJAX Fetch for inserting pages into db.
-        Searching pages.
+  let editorGuia = undefined;
+  let editorNPC = undefined;
+  let editorQuest = undefined;
+  let editorItem = undefined;
 
-    */
+  /* To Do:
+    Build Up AJAX Fetch for inserting pages into db.
+    Searching pages.
+  */
 
-    guiaButton.addEventListener('click', function(){
+  guiaButton.addEventListener('click', function(){
         questSection.classList.remove('block');
         npcSection.classList.remove('block');
         itemSection.classList.remove('block');
@@ -192,9 +194,9 @@ document.addEventListener('DOMContentLoaded', function(){
 
     
 
-    });
+  });
 
-    questButton.addEventListener('click', function(){
+  questButton.addEventListener('click', function(){
         guiaSection.classList.remove('block');
         npcSection.classList.remove('block');
         itemSection.classList.remove('block');
@@ -359,9 +361,9 @@ document.addEventListener('DOMContentLoaded', function(){
         }
         
 
-    });
+  });
 
-    npcButton.addEventListener('click', function(){
+  npcButton.addEventListener('click', function(){
         guiaSection.classList.remove('block');
         questSection.classList.remove('block');
         itemSection.classList.remove('block');
@@ -525,21 +527,33 @@ document.addEventListener('DOMContentLoaded', function(){
             });
         }
         
-    });
+  });
 
-    itemButton.addEventListener('click', function(){
-        guiaSection.classList.remove('block');
-        questSection.classList.remove('block');
-        npcSection.classList.remove('block');
+  itemButton.addEventListener('click', function(){
+    fieldList = [];
 
-        guiaSection.classList.add('hidden');
-        questSection.classList.add('hidden');
-        npcSection.classList.add('hidden');
 
-        itemSection.classList.add('block');
-        itemSection.classList.remove('hidden');
+    let basefieldList = [
+      document.querySelector('#item_title'),
+      document.querySelector('#item_types'),
+      document.querySelector('#item_subtypes')
+    ];
 
-        if (editorItem == undefined){
+    fieldList = [...basefieldList]
+    let requiredFields = [...basefieldList]
+
+    guiaSection.classList.remove('block');
+    questSection.classList.remove('block');
+    npcSection.classList.remove('block');
+
+    guiaSection.classList.add('hidden');
+    questSection.classList.add('hidden');
+    npcSection.classList.add('hidden');
+
+    itemSection.classList.add('block');
+    itemSection.classList.remove('hidden');
+
+    if (editorItem == undefined){
             editorItem = new EditorJS({
                 holder:'textAreaItem',
                 placeholder:'Texto do Item',
@@ -689,54 +703,148 @@ document.addEventListener('DOMContentLoaded', function(){
                     }
                   },
             });
-        }
+    }
 
-        selectItemTypes = document.querySelector('#item_types')
-        fetch('/api/getItemTypes').then((response) => response.json()).then((data) => {
+    selectItemTypes = document.querySelector('#item_types')
+    fetch('/api/getItemTypes').then((response) => response.json()).then((data) => {
+      selectItemTypes.innerHTML = '';    
+      const def_op = new Option('Selecione um Tipo de Item', DEFAULT_OPTION); 
+      selectItemTypes.appendChild(def_op);
+
+      for(let item of data){
+          let opt = document.createElement('option');
+          opt.value = item.id;
+          opt.innerHTML = item.name;
+          opt.classList.add('capitalize');
+          selectItemTypes.appendChild(opt);
+      }
+    });
+
+    selectItemSubtypes = document.querySelector('#item_subtypes');
+
+    selectItemTypes.addEventListener('change', () => {
+        /* Lembrar de retirar itens dos inputs que vem depois desse em caso de mudança. */
+        fetch('/api/getItemSubtypes?item_type='+selectItemTypes.value).then((response) => response.json()).then((data) =>{
+            selectItemSubtypes.innerHTML = '';
+
+            const def_op = new Option('Selecione um Subtipo', DEFAULT_OPTION);
+            selectItemSubtypes.appendChild(def_op);
+
             for(let item of data){
                 let opt = document.createElement('option');
                 opt.value = item.id;
                 opt.innerHTML = item.name;
                 opt.classList.add('capitalize');
-                selectItemTypes.appendChild(opt);
-            }
+                selectItemSubtypes.appendChild(opt);
+            } 
         });
-
-        selectItemSubtypes = document.querySelector('#item_subtypes');
-
-        selectItemTypes.addEventListener('change', () => {
-            /* Lembrar de retirar itens dos inputs que vem depois desse em caso de mudança. */
-            fetch('/api/getItemSubtypes?item_type='+selectItemTypes.value).then((response) => response.json()).then((data) =>{
-                selectItemSubtypes.innerHTML = ''
-                for(let item of data){
-                    let opt = document.createElement('option');
-                    opt.value = item.id;
-                    opt.innerHTML = item.name;
-                    opt.classList.add('capitalize');
-                    selectItemSubtypes.appendChild(opt);
-                } 
-            });
-        });
-
-        selectItemTypes.addEventListener('change', async function() {
-            async function getStatus(){
-                const respons = await fetch('/api/getStatusTypes');
-                let jsonObj = await respons.json();
-
-                return jsonObj;
-            }
-
-            async function getFields(id){
-                const respons = await fetch('/api/getFieldsItemType?id='+id);
-                let jsonObj = await respons.json();
-
-                return jsonObj; 
-            }
-
-            let fields = await getFields(selectItemTypes.value);
-            alert(JSON.stringify(fields))
-        });
-
     });
+
+    selectItemTypes.addEventListener('change', async function() {
+
+      requiredFields = [...basefieldList];
+      fieldList = [...basefieldList];
+
+      async function getStatus(){
+          const respons = await fetch('/api/getStatusTypes');
+          let jsonObj = await respons.json();
+
+          return jsonObj;
+      }
+
+      async function getFields(id){
+          const respons = await fetch('/api/getFieldsItemType?id='+id);
+          let jsonObj = await respons.json();
+
+          return jsonObj; 
+      }
+
+      let response = await getFields(selectItemTypes.value);
+      let fields = response.fields
+
+      input_group_data_items = document.querySelector('#input_group_data_items');
+      input_group_data_items.innerHTML = '';
+
+      for(field of fields){
+          let newDiv = document.createElement('div');
+          newDiv.classList.add('p-4');
+          
+          let newField = '';
+
+          if (field.type == 'input'){
+              newDiv.classList.add('inline-block');
+              newField = document.createElement('input')
+              newField.type = 'number';
+              newField.name = field.name;
+              newField.placeholder = field.placeholder;
+          }
+          else if (field.type == 'select'){
+              newDiv.classList.add('flex');
+
+              newField = document.createElement('select');
+              newField.name = field.name;
+
+              stdOption = new Option('Selecione uma Opção', 0);
+              stdOption.disabled = true;
+              newField.appendChild(stdOption);
+
+              for (let option of field.options){
+                  let newOption = new Option(option.name, option.id);
+                  newField.appendChild(newOption);
+              }
+
+              stdOption.selected = true;
+          }
+
+          if (field.required == true){
+            requiredFields.push(newField);
+          }
+
+          fieldList.push(newField);
+          
+          newField.classList.add('rounded-full');
+          newField.classList.add('px-2');
+          newField.classList.add('py-1');
+
+          newDiv.appendChild(newField);
+          input_group_data_items.appendChild(newDiv);
+      }
+    });
+
+    sendItemButton.addEventListener('click', async () => {
+      let payload = {}; /* Build Payload with Fields Data */
+      alert('i')
+
+      function showError(){
+        let error_box = document.querySelector('#error-box-item');
+        error_box.classList.add('block');
+        error_box.classList.remove('hidden');
+      }
+
+      if (requiredFields.map((f) => {return f.value == DEFAULT_OPTION || f.value == '' ? true : false}).includes(true)){
+        showError()
+        return 0;
+      }
+
+
+      for (let field of fieldList){
+        if (field.value == '' || field.value == '0'){
+          continue;
+        }else{
+          payload[field.name] = field.value;
+        }   
+      }
+
+      payload.text = await editorItem.save();
+
+      const response = await fetch('/api/insertItem', {
+      method:'POST',
+      headers: {
+          'Content-Type': 'application/json',
+        },
+      body: JSON.stringify(payload)
+      });
+    });
+  });
 });
 

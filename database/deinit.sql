@@ -1,3 +1,4 @@
+DROP PROCEDURE insertOffensiveItemNoStatus;
 DROP TABLE pages;
 DROP TABLE npcs;
 DROP TABLE quests;

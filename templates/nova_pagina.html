@@ -136,22 +136,26 @@
         <h3 class="text-lg font-inputs "> Criando Página de Item</h3>
     </div>    
     <div>
+        <div id='error-box-item' class="hidden text-center rounded-full font-inputs text-swhite p-4 bg-redwarning">
+            <p>Preencha todos os campos obrigatórios</p>
+        </div>
+
         <form>
             <input type="hidden" name="page_type" value="{{allowed_pages_relation['npc']}}">
             <div id="input_group_general_items">
                 <div class="p-4 inline-block">
-                    <input type="text" class="rounded-full px-2 py-1" placeholder="Nome do Item" name="item_title">
+                    <input id="item_title" type="text" class="rounded-full px-2 py-1" placeholder="Nome do Item" name="item_title">
                 </div>
 
                 <div class="p-4 inline-block">
                     <select id="item_types" name="item_type" class="capitalize rounded-full px-2 py-1">
-                        <option selected disabled>Selecione o Tipo de Item</option>
+                        <option selected disabled value="0">Selecione o Tipo de Item</option>
                     </select>
                 </div>
 
                 <div class="p-4 inline-block">
                     <select id="item_subtypes" name="item_subtype" class="capitalize rounded-full px-2 py-1">
-                        <option selected disabled>Selecione o Subtipo do Item</option>
+                        <option selected disabled value="0">Selecione o Subtipo do Item</option>
                     </select>
                 </div>
             </div>
