@@ -1,6 +1,7 @@
 from flask import Flask, flash, redirect, render_template, request, session, url_for, abort, g, Response, make_response, jsonify
 from flask_session import Session
 import json
+import configparser
 
 # Resource: https://tedboy.github.io/flask/generated/werkzeug.generate_password_hash.html
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -34,13 +35,29 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Setup DB
-dbconfig = {
-    'user':'root',
-    'password':'root',
-    'host':'127.0.0.1',
-    'port':3306,
-    'database':'roseonwiki'
-}
+
+def configure_db():
+    if app.jinja_env.globals['project_status'] == 'development':
+        db_config = {
+            'user':'root',
+            'password':'root',
+            'host':'127.0.0.1',
+            'port':3306,
+            'database':'roseonwiki'
+        }
+    else:
+        cfg = configparser.ConfigParser()
+        cfg.read('db.ini')
+        db_config = {
+            'user': cfg['DATABASE']['user'],
+            'password':cfg['DATABASE']['password'],
+            'host':cfg['DATABASE']['host'],
+            'port':int(cfg['DATABASE']['port']),
+            'database':cfg['DATABASE']['database']
+        }
+    return db_config
+
+dbconfig = configure_db()
 
 def get_db():
     if not ('db' in g):
