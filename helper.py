@@ -78,7 +78,7 @@ def renderEditorData(editor_data):
         elif item['type'] == 'quote':
             new_html = '<div class="bg-icewhite block font-opensans items-center bg-opacity-70 rounded p-6 my-3 "><span class="text-3xl block">"</span><div class="px-6 text-sm italic"><p class="text-justify leading-4">'+item['data']['text']+'</p></div><span class="text-3xl text-right block">"</span><div class="text-center"><span class="p-3 text-xs font-opensans font-bold bg-icewhite rounded-full"> — '+item['data']['caption']+'</span></div></div>'
         elif item['type'] == 'warning':
-            new_html = '<div class="p-3 my-3  font-inputs bg-opacity-70 rounded-lg bg-yellowwarning"><span class="text-base text-center mb-3 font-inputs font-medium block">'+item['data']['title']+'</span><hr><div class="mt-3 flex items-center"><span class="inline-block">'+WARNING_SYMBOL+'</span><span class="mx-auto text-sm">'+item['data']['message']+'</span></div></div>'
+            new_html = '<div class="p-3 my-3  font-inputs bg-opacity-70 rounded-lg bg-yellowwarning">cc<span class="text-base text-center mb-3 font-inputs font-medium block">'+item['data']['title']+'</span><hr><div class="mt-3 flex items-center"><span class="inline-block">'+WARNING_SYMBOL+'</span><span class="mx-auto text-sm">'+item['data']['message']+'</span></div></div>'
         elif item['type'] == 'image':
             new_html = '<div class="p-3 my-3 text-center"><img class="rounded-xl mb-4 mx-auto" src="'+item['data']['url']+'"><span class="p-2 mt-3 text-xs font-opensans italic bg-icewhite rounded-full">'+item['data']['caption']+'</span></div>'
         elif item['type'] == 'linkTool':
