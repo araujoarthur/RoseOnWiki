@@ -16,7 +16,7 @@ from helper import loginRequired, loggedInNotAllowed, APP_DATE_FORMAT, checkAllo
 app = Flask(__name__)
 
 # Setting some variables to be used in jinja templates.
-app.jinja_env.globals['wiki_version'] = '1.0.0'
+app.jinja_env.globals['wiki_version'] = '9.0.0'
 app.jinja_env.globals['project_status'] = 'development'
 
 

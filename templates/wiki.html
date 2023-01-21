@@ -71,7 +71,7 @@
         </script>
         <link href="/static/style.css" rel="stylesheet">
     </head>
-    <body class="bg-agradeblewhite min-h-screen">
+    <body class="block bg-agradeblewhite min-h-screen">
         <nav class="text-center lg:flex items-center p-2 bg-swhite">
             <img class='mx-auto md:mx-0 md:mr-2' src="https://via.placeholder.com/100x60?text=logo">
             {% block customBlock %}
@@ -83,7 +83,7 @@
                 </form>
             </div>
         </nav>
-        <div class="px-2 mt-1 mx-auto">
+        <div class="px-2 mt-1 mx-auto mb-auto">
             <section class="grid grid-cols-12 gap-1">
                 <div class="p-2 col-span-12 lg:col-span-2 bg-swhite">
                     <section class="bg-backmenu bg-opacity-20 backdrop-blur-lg p-2 rounded drop-shadow-lg">
@@ -206,8 +206,12 @@
                 </div>
             </section>
         </div>
-        <footer class="bg-orange mt-2 text-center font-opensans inset-x-0 bottom-0">
-            RoseOnBr - 2023
+        <footer class="mt-2 text-center font-opensans">
+            <div class="p-10">
+                <hr>
+                <span class="mt-2 text-xs">RoseOnBr - 2023</span>
+            </div>
+            
         </footer>
     </body>
 </html>
