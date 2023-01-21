@@ -1,4 +1,4 @@
-from flask import Flask, flash, redirect, render_template, request, session, url_for, abort, g, Response
+from flask import Flask, flash, redirect, render_template, request, session, url_for, abort, g, Response, make_response, jsonify
 from flask_session import Session
 import json
 
@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from aagSQLmanager import aagSQLmanager
 
-from helper import loginRequired, loggedInNotAllowed, APP_DATE_FORMAT, checkAllowance
+from helper import loginRequired, loggedInNotAllowed, APP_DATE_FORMAT, checkAllowance, renderEditorData
 
 
 ## !! It seems it's not needed to clean data from user inputs as mariadb uses prepared statements.
@@ -48,6 +48,20 @@ def get_db():
     
     return g.db
 
+@app.before_first_request
+def init_stuff():
+    global PAGE_TYPES
+    loc_db = aagSQLmanager(**dbconfig)
+
+    PAGE_TYPES = dict()
+    page_types_response = loc_db.execute('SELECT * FROM page_types')
+    for pagetype in page_types_response:
+        PAGE_TYPES[pagetype['name']] = pagetype['id']
+    print(PAGE_TYPES)
+
+    loc_db.close()
+
+
 @app.teardown_appcontext
 def teardown_db(exception):
     db = g.pop('db', None)
@@ -55,12 +69,14 @@ def teardown_db(exception):
     if db is not None:
         db.close()
 
-# Taken from pset 9 to ensure responses aren't cached
+
 
 @app.before_request
 def before_request_callback():
+    #This ensure that I get a fresh connection for every request.
     get_db()
 
+# Taken from pset 9 to ensure responses aren't cached
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -97,6 +113,23 @@ def nova_pagina():
     planets = g.db.execute("SELECT * FROM planets")
     return render_template('nova_pagina.html', page_types=db_res, allowed_pages_relation=allowed_pages_relation, planets=planets)
 
+@app.route('/guia/<int:guia_id>')
+
+def mostra_guia(guia_id):
+    if not guia_id:
+        flash('Guia não encontrado!')
+        return redirect('/')
+    else:
+        guia_db = g.db.execute('SELECT * FROM content WHERE id = ?', guia_id)
+        if guia_db != False and len(guia_db) == 1:
+            page_content = g.db.execute('SELECT * FROM pages where content_id = ?', guia_id)
+            if page_content != False:
+                page_content = page_content[0]
+                guide_content = renderEditorData(page_content['content'])
+                return render_template('guia.html', guide_name = guia_db[0]['name'], guide_content=guide_content)
+        else:
+            flash('Algo deu errado!')
+            return redirect('/')
 
 # Authentication Routes
 
@@ -173,6 +206,9 @@ def logout():
     flash('Logout com sucesso!', category='success')
     return redirect("/")
 
+
+
+
 # Handlers
 @app.route('/error')
 def errorGeneral():
@@ -240,24 +276,26 @@ def get_fields_item_type():
 @app.route('/api/insertItem', methods=['POST'])
 @checkAllowance(3)
 def insert_item():
-    print()
-    print(request.data)
-    data = request.get_json()
-    print(data)
-    if request.is_json:
-        if not request.json.get('item_type'):
-            return Response("Missing Item Type", 400)
-        else:
-            if int(request.json.get('item_type')) == 1:
-                requiredFields = ['item_title', 'item_subtype', 'weapon_attack_power', 'weapon_precision', "weapon_attack_speed", "weapon_attack_range"]
-                if all(map(lambda x: x in requiredFields, requiredFields)):
-                    content_response = g.db.execute('INSERT INTO content(name, type) VALUES(?,?)', request.json.get('item_title'), 4);
-                    if (content_response != False) and (content_response != None):
-                        item_response = g.db.execute('INSERT INTO item(id, type_id, subtype_id) VALUES(?, ?, ?)', content_response, request.json.get['item_type'], request.json.get['item_subtype'])
-                        # TO CONTINUE
-                    else:
-                        return Response("Something wen't wrong with DB operations", 500)
-                else:
-                     return Response("Missing Field", 400)
+    return Response({'status':403, 'message':'Not yet available'}, 'Not yet available', 403)
+
+@app.route('/api/insertGuide', methods=['POST'])
+@checkAllowance(3)
+def insert_guide():
+    if not request.is_json:
+        return Response('Invalid JSON Payload', 400)
     else:
-        return Response("No JSON Payload", 400)
+        if not request.json.get('title'):
+            return make_response({'status':400, 'message':'Missing Title'}, 400, {'Content-Type':'application/json'})
+        elif not request.json.get('blocks'):
+            return make_response({'status':400, 'message':'Missing Blocks'}, 400, {'Content-Type':'application/json'})
+        else:
+            content_id = g.db.execute('INSERT INTO content(name, type) VALUES(?,?)', request.json.get('title'), PAGE_TYPES['guia'])
+            if content_id != False and content_id != None:
+                page_response = g.db.execute('INSERT INTO pages(created_by, page_type, content_id, content) VALUES(?, ?, ?, ?)', session['user_id'], PAGE_TYPES['guia'], content_id, str(request.json.get('blocks')))
+                if page_response != False:
+                    page_response = g.db.execute('INSERT INTO guides(id, subject) VALUES(?,?)', content_id, request.json.get('title'))
+                    return make_response({'status':200, 'message':'success!'}, 200, {'Content-Type':'application/json'})
+                return make_response({'status':500, 'message':'Something wen\'t wrong in DB Operations'}, 500, {'Content-Type':'application/json'}) 
+            else:
+                return make_response({'status':500, 'message':'Something wen\'t wrong in DB Operations'}, 500, {'Content-Type':'application/json'})
+

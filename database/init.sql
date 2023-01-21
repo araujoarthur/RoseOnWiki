@@ -259,7 +259,7 @@ CREATE TABLE npcs(
     FOREIGN KEY (city_id) REFERENCES cities(id) ON DELETE CASCADE
 ); 
 
-CREATE TABLE guias(
+CREATE TABLE guides(
     id INTEGER PRIMARY KEY,
     subject VARCHAR(60) NOT NULL,
 

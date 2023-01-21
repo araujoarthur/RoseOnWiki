@@ -156,10 +156,10 @@ class Transactions(object):
     """
        Class that hold methods to deal with transactions wrapping MariaDB Connector methods.
     """
-    def __init__(self, idmSQL):
-        if idmSQL.connection.autocommit == True:
+    def __init__(self, aagSQL):
+        if aagSQL.connection.autocommit == True:
             raise RuntimeError('Can\'t use transactions while autocommit is enabled.')
-        self.idmSQL = idmSQL
+        self.idmSQL = aagSQL
         self.statementList = []
 
 
@@ -170,10 +170,10 @@ class Transactions(object):
             TO-DO:
                 - Test efficiecy.
         """
-        if self.idmSQL.connection.autocommit == True:
+        if self.aagSQL.connection.autocommit == True:
             raise RuntimeError('Can\'t use transactions while autocommit is active')
 
-        self.idmSQL.checkQuery(query)
+        self.aagSQL.checkQuery(query)
 
         qmarkCount = query.count('?')
         if qmarkCount > len(args):
@@ -207,8 +207,10 @@ class Transactions(object):
         if len(self.statementList) == 0:
             raise RuntimeError("Missing statements in statementList")
         for commitable in self.statementList:
-            self.idmSQL.cursor.execute(commitable[0], commitable[1])
+            self.aagSQL.cursor.execute(commitable[0], commitable[1])
         
-        self.idmSQL.connection.commit()
-        self.idmSQL.refreshConnection()
+        self.aagSQL.connection.commit()
+        self.aagSQL.refreshConnection()
+        self.statementList = []
+
 

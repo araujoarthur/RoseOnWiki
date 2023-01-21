@@ -39,7 +39,13 @@ document.addEventListener('DOMContentLoaded', function(){
 
         guiaSection.classList.add('block');
         guiaSection.classList.remove('hidden');
-        
+
+        function showError(){
+          let error_box = document.querySelector('#error-box-guide');
+          error_box.classList.add('block');
+          error_box.classList.remove('hidden');
+        }
+
         if (editorGuia == undefined){
             editorGuia = new EditorJS({
                 holder:'textAreaGuia',
@@ -191,6 +197,39 @@ document.addEventListener('DOMContentLoaded', function(){
                   },
             });    
         }
+
+        let sendGuideButton = document.querySelector('#createGuidePage');
+        let guideTitle = document.querySelector('#guide_title');
+
+       
+
+        sendGuideButton.addEventListener('click', async () =>
+        {
+          let editorGuiaText = await editorGuia.save();
+
+          console.log(JSON.stringify(editorGuiaText));
+
+          if ((guideTitle.value == '') || (editorGuiaText.blocks == [])){
+            showError();
+            return
+          } else
+          {
+            let payload = {}
+            payload.title = guideTitle.value;
+            payload.blocks = editorGuiaText.blocks;
+
+            const response = await fetch('/api/insertGuide',{
+              method:'POST',
+              headers:{
+                'Content-Type':'application/json'
+              },
+              body:JSON.stringify(payload)
+            });
+
+            response_data = await response.json()
+            console.log(response_data)
+          }
+        });
 
     
 
@@ -529,6 +568,7 @@ document.addEventListener('DOMContentLoaded', function(){
         
   });
 
+  /* Item Stuff */
   itemButton.addEventListener('click', function(){
     fieldList = [];
 
@@ -837,7 +877,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
       payload.text = await editorItem.save();
 
-      const response = await fetch('/api/insertItem', {
+      const response = await fetch('/endpoint', {
       method:'POST',
       headers: {
           'Content-Type': 'application/json',
